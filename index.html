@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quotations Dashboard — January 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #111621;
+    --card: #161c2a;
+    --border: #1e2840;
+    --accent: #4f8ef7;
+    --accent2: #38e09e;
+    --warn: #f76b4f;
+    --yellow: #f7c94f;
+    --muted: #4a5578;
+    --text: #e8ecf7;
+    --text2: #8892b0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 40px 32px;
+  }
+  .header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .header-left h1 span { color: var(--accent); font-style: italic; }
+  .header-left p {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: var(--text2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .grid { display: grid; gap: 16px; }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g21 { grid-template-columns: 2fr 1fr; }
+  .section { margin-bottom: 16px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .card.accent::before { background: var(--accent); }
+  .card.green::before { background: var(--accent2); }
+  .card.red::before { background: var(--warn); }
+  .card.yellow::before { background: var(--yellow); }
+  .card.muted::before { background: var(--muted); }
+  .card-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 10px;
+  }
+  .card-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .card-value.accent { color: var(--accent); }
+  .card-value.green { color: var(--accent2); }
+  .card-value.red { color: var(--warn); }
+  .card-value.yellow { color: var(--yellow); }
+  .card-sub { margin-top: 8px; font-size: 0.72rem; color: var(--text2); }
+  .section-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding-left: 2px;
+  }
+  .lboard { display: flex; flex-direction: column; gap: 10px; }
+  .lrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .lrow-rank {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--muted);
+    width: 22px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .lrow-name { flex: 1; font-size: 0.76rem; color: var(--text); }
+  .lrow-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    min-width: 36px;
+    text-align: right;
+  }
+  .lrow-bar-wrap {
+    width: 60px; height: 4px;
+    background: var(--border);
+    border-radius: 2px; overflow: hidden;
+  }
+  .lrow-bar { height: 100%; border-radius: 2px; }
+  .wr-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .wr-high { background: rgba(56,224,158,0.12); color: var(--accent2); }
+  .wr-mid  { background: rgba(79,142,247,0.12); color: var(--accent); }
+  .wr-low  { background: rgba(247,107,79,0.12); color: var(--warn); }
+  .wr-zero { background: rgba(74,85,120,0.2); color: var(--muted); }
+  .region-row { margin-bottom: 14px; }
+  .region-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text2);
+    margin-bottom: 5px;
+  }
+  .region-meta strong { color: var(--text); }
+  .region-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .region-fill { height: 100%; border-radius: 4px; }
+  .region-sub {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .breakdown {
+    display: flex; height: 10px; border-radius: 5px; overflow: hidden; margin: 16px 0 10px;
+  }
+  .breakdown-seg { height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--text2); }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .rate-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; padding: 10px 0;
+  }
+  .rate-circle { position: relative; width: 140px; height: 140px; }
+  .rate-circle svg { transform: rotate(-90deg); }
+  .rate-circle-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .rate-circle-text .big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem; color: var(--accent2); line-height: 1;
+  }
+  .rate-circle-text .small {
+    font-size: 0.6rem; color: var(--text2);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .rate-sub { margin-top: 14px; text-align: center; font-size: 0.7rem; color: var(--text2); line-height: 1.6; }
+  .ctable { width: 100%; border-collapse: collapse; font-size: 0.72rem; margin-top: 12px; }
+  .ctable th {
+    text-align: left; font-size: 0.6rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+    padding: 0 8px 8px 8px; border-bottom: 1px solid var(--border);
+  }
+  .ctable td { padding: 7px 8px; border-bottom: 1px solid rgba(30,40,64,0.5); color: var(--text2); vertical-align: middle; }
+  .ctable tr:last-child td { border-bottom: none; }
+  .ctable tr:hover td { background: rgba(79,142,247,0.04); }
+  .mini-bar-wrap { width: 50px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
+  .mini-bar { height: 100%; border-radius: 3px; }
+  .insight-box {
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 0.76rem;
+    line-height: 1.7;
+    color: var(--text2);
+  }
+  .insight-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card, .lrow { animation: fadeIn 0.5s ease both; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Quotations <span>Dashboard</span></h1>
+    <p>January 2026 &mdash; By Agent (Col E) &amp; Country (Col F) &mdash; 999 Total Records</p>
+  </div>
+  <div class="badge">Generated Feb 2026</div>
+</div>
+
+<!-- KPI Row -->
+<div class="section">
+  <div class="section-title">Key Metrics</div>
+  <div class="grid g4">
+    <div class="card accent">
+      <div class="card-label">Total Quotes Sent</div>
+      <div class="card-value accent">999</div>
+      <div class="card-sub">All records in January 2026</div>
+    </div>
+    <div class="card green">
+      <div class="card-label">Won</div>
+      <div class="card-value green">129</div>
+      <div class="card-sub">12.9% overall win rate</div>
+    </div>
+    <div class="card red">
+      <div class="card-label">Lost</div>
+      <div class="card-value red">706</div>
+      <div class="card-sub">70.7% of all quotes</div>
+    </div>
+    <div class="card yellow">
+      <div class="card-label">In Progress + Sent</div>
+      <div class="card-value yellow">123</div>
+      <div class="card-sub">96 in progress · 27 sent</div>
+    </div>
+  </div>
+</div>
+
+<!-- Status Bar + Circle -->
+<div class="section">
+  <div class="grid g21">
+    <div class="card muted">
+      <div class="card-label">Status Breakdown</div>
+      <div class="breakdown">
+        <div class="breakdown-seg" style="width:12.9%; background:var(--accent2);"></div>
+        <div class="breakdown-seg" style="width:70.7%; background:var(--warn);"></div>
+        <div class="breakdown-seg" style="width:9.6%; background:var(--accent);"></div>
+        <div class="breakdown-seg" style="width:2.7%; background:var(--yellow);"></div>
+        <div class="breakdown-seg" style="width:4.0%; background:var(--muted);"></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>Won (129 · 12.9%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--warn)"></div>Lost (706 · 70.7%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Progress (96 · 9.6%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>Sent (27 · 2.7%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--muted)"></div>Cancel / Deleted (40 · 4.0%)</div>
+      </div>
+    </div>
+    <div class="card green">
+      <div class="rate-wrap">
+        <div class="rate-circle">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e2840" stroke-width="12"/>
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#38e09e" stroke-width="12"
+              stroke-dasharray="364.42" stroke-dashoffset="317.4" stroke-linecap="round"/>
+          </svg>
+          <div class="rate-circle-text">
+            <div class="big">12.9%</div>
+            <div class="small">Win Rate</div>
+          </div>
+        </div>
+        <div class="rate-sub">129 won out of 999 quotes<br><span style="color:var(--warn)">706 lost</span> &nbsp;·&nbsp; <span style="color:var(--accent)">123 pending</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Agent Leaderboards -->
+<div class="section">
+  <div class="section-title">Agent Performance — Column E</div>
+  <div class="grid g3">
+
+    <div class="card accent">
+      <div class="card-label">🏆 Most Quotes Sent — Top 5 Agents</div>
+      <div class="lboard" style="margin-top:12px;">
+        <div class="lrow">
+          <div class="lrow-rank">1</div>
+          <div class="lrow-name">Schneider</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:100%; background:var(--accent);"></div></div>
+          <div class="lrow-val" style="color:var(--accent)">205</div>
+          <span class="wr-badge wr-mid">18.5% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">2</div>
+          <div class="lrow-name">Pegasus</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:37%; background:var(--accent);"></div></div>
+          <div class="lrow-val" style="color:var(--accent)">75</div>
+          <span class="wr-badge wr-mid">17.3% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">3</div>
+          <div class="lrow-name">Azia24</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:24%; background:var(--accent);"></div></div>
+          <div class="lrow-val" style="color:var(--accent)">49</div>
+          <span class="wr-badge wr-low">4.1% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">4</div>
+          <div class="lrow-name">Sovereign Logistics</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:21%; background:var(--accent);"></div></div>
+          <div class="lrow-val" style="color:var(--accent)">44</div>
+          <span class="wr-badge wr-high">79.5% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">5</div>
+          <div class="lrow-name">GEX Logistics</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:21%; background:var(--accent);"></div></div>
+          <div class="lrow-val" style="color:var(--accent)">43</div>
+          <span class="wr-badge wr-zero">0.0% WR</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card green">
+      <div class="card-label">🥇 Most Quotes Won — Top 5 Agents</div>
+      <div class="lboard" style="margin-top:12px;">
+        <div class="lrow">
+          <div class="lrow-rank">1</div>
+          <div class="lrow-name">Schneider</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:100%; background:var(--accent2);"></div></div>
+          <div class="lrow-val" style="color:var(--accent2)">38</div>
+          <span class="wr-badge wr-mid">18.5% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">2</div>
+          <div class="lrow-name">Sovereign Logistics</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:92%; background:var(--accent2);"></div></div>
+          <div class="lrow-val" style="color:var(--accent2)">35</div>
+          <span class="wr-badge wr-high">79.5% WR ★</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">3</div>
+          <div class="lrow-name">Pegasus</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:34%; background:var(--accent2);"></div></div>
+          <div class="lrow-val" style="color:var(--accent2)">13</div>
+          <span class="wr-badge wr-mid">17.3% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">4</div>
+          <div class="lrow-name">Swedebridge</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:16%; background:var(--accent2);"></div></div>
+          <div class="lrow-val" style="color:var(--accent2)">6</div>
+          <span class="wr-badge wr-high">85.7% WR ★</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">5</div>
+          <div class="lrow-name">Genco Logistics</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:8%; background:var(--accent2);"></div></div>
+          <div class="lrow-val" style="color:var(--accent2)">3</div>
+          <span class="wr-badge wr-high">60.0% WR</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card red">
+      <div class="card-label">⚠️ Most Quotes Lost — Top 5 Agents</div>
+      <div class="lboard" style="margin-top:12px;">
+        <div class="lrow">
+          <div class="lrow-rank">1</div>
+          <div class="lrow-name">Schneider</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:100%; background:var(--warn);"></div></div>
+          <div class="lrow-val" style="color:var(--warn)">143</div>
+          <span class="wr-badge wr-mid">18.5% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">2</div>
+          <div class="lrow-name">Pegasus</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:38%; background:var(--warn);"></div></div>
+          <div class="lrow-val" style="color:var(--warn)">55</div>
+          <span class="wr-badge wr-mid">17.3% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">3</div>
+          <div class="lrow-name">Azia24</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:33%; background:var(--warn);"></div></div>
+          <div class="lrow-val" style="color:var(--warn)">47</div>
+          <span class="wr-badge wr-low">4.1% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">4</div>
+          <div class="lrow-name">GEX Logistics</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:27%; background:var(--warn);"></div></div>
+          <div class="lrow-val" style="color:var(--warn)">38</div>
+          <span class="wr-badge wr-zero">0.0% WR</span>
+        </div>
+        <div class="lrow">
+          <div class="lrow-rank">5</div>
+          <div class="lrow-name">FIBS</div>
+          <div class="lrow-bar-wrap"><div class="lrow-bar" style="width:20%; background:var(--warn);"></div></div>
+          <div class="lrow-val" style="color:var(--warn)">29</div>
+          <span class="wr-badge wr-low">2.7% WR</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Country / Region Section -->
+<div class="section">
+  <div class="section-title">Country &amp; Regional Distribution — Column F</div>
+  <div class="grid g2">
+
+    <div class="card muted">
+      <div class="card-label">Quotes by Region</div>
+      <div style="margin-top:16px;">
+
+        <div class="region-row">
+          <div class="region-meta">
+            <span><strong>Other Regions</strong> — SG, AE, LK, EG, MV, IN, UG, KE…</span>
+            <span style="color:var(--warn)">2.4% WR</span>
+          </div>
+          <div class="region-track">
+            <div class="region-fill" style="width:41.2%; background:linear-gradient(90deg,#2e3a5e,var(--muted));"></div>
+          </div>
+          <div class="region-sub">
+            <span>412 quotes · <span style="color:var(--accent2)">10 won</span> · <span style="color:var(--warn)">323 lost</span></span>
+            <span>41.2% of total</span>
+          </div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-meta">
+            <span><strong>Europe</strong> — CH, FR, DE, GB, PL, ES, IT…</span>
+            <span style="color:var(--accent)">16.4% WR</span>
+          </div>
+          <div class="region-track">
+            <div class="region-fill" style="width:40.9%; background:linear-gradient(90deg,var(--accent),#6fa8ff);"></div>
+          </div>
+          <div class="region-sub">
+            <span>409 quotes · <span style="color:var(--accent2)">67 won</span> · <span style="color:var(--warn)">278 lost</span></span>
+            <span>40.9% of total</span>
+          </div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-meta">
+            <span><strong>United States</strong></span>
+            <span style="color:var(--accent2)">36.4% WR ★ Best Region</span>
+          </div>
+          <div class="region-track">
+            <div class="region-fill" style="width:14.3%; background:linear-gradient(90deg,var(--accent2),#2dd68a);"></div>
+          </div>
+          <div class="region-sub">
+            <span>143 quotes · <span style="color:var(--accent2)">52 won</span> · <span style="color:var(--warn)">79 lost</span></span>
+            <span>14.3% of total</span>
+          </div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-meta">
+            <span><strong>Canada</strong></span>
+            <span style="color:var(--warn)">0.0% WR</span>
+          </div>
+          <div class="region-track">
+            <div class="region-fill" style="width:3.4%; background:var(--warn);"></div>
+          </div>
+          <div class="region-sub">
+            <span>34 quotes · <span style="color:var(--muted)">0 won</span> · <span style="color:var(--warn)">26 lost</span></span>
+            <span>3.4% of total</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card accent">
+      <div class="card-label">Top 12 Countries by Volume</div>
+      <table class="ctable">
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th style="text-align:right">Total</th>
+            <th style="text-align:right">Won</th>
+            <th style="text-align:right">Lost</th>
+            <th>Win Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span style="font-size:1rem">🇨🇭</span> <span style="color:var(--text)">CH — Switzerland</span></td>
+            <td style="text-align:right">152</td>
+            <td style="text-align:right;color:var(--accent2)">25</td>
+            <td style="text-align:right;color:var(--warn)">116</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:16%; background:var(--accent);"></div></div>16.4%</td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇺🇸</span> <span style="color:var(--text)">US — United States</span></td>
+            <td style="text-align:right">143</td>
+            <td style="text-align:right;color:var(--accent2)">52</td>
+            <td style="text-align:right;color:var(--warn)">79</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:36%; background:var(--accent2);"></div></div><span style="color:var(--accent2)">36.4% ★</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇫🇷</span> <span style="color:var(--text)">FR — France</span></td>
+            <td style="text-align:right">50</td>
+            <td style="text-align:right;color:var(--accent2)">14</td>
+            <td style="text-align:right;color:var(--warn)">32</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:28%; background:var(--accent);"></div></div>28.0%</td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇸🇬</span> <span style="color:var(--text)">SG — Singapore</span></td>
+            <td style="text-align:right">49</td>
+            <td style="text-align:right;color:var(--accent2)">2</td>
+            <td style="text-align:right;color:var(--warn)">44</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:4%; background:var(--warn);"></div></div><span style="color:var(--warn)">4.1%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇱🇰</span> <span style="color:var(--text)">LK — Sri Lanka</span></td>
+            <td style="text-align:right">39</td>
+            <td style="text-align:right;color:var(--muted)">0</td>
+            <td style="text-align:right;color:var(--warn)">38</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:1%; background:var(--muted);"></div></div><span style="color:var(--muted)">0.0%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇦🇪</span> <span style="color:var(--text)">AE — UAE</span></td>
+            <td style="text-align:right">39</td>
+            <td style="text-align:right;color:var(--accent2)">1</td>
+            <td style="text-align:right;color:var(--warn)">35</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:3%; background:var(--warn);"></div></div><span style="color:var(--warn)">2.6%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇩🇪</span> <span style="color:var(--text)">DE — Germany</span></td>
+            <td style="text-align:right">39</td>
+            <td style="text-align:right;color:var(--accent2)">7</td>
+            <td style="text-align:right;color:var(--warn)">30</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:18%; background:var(--accent);"></div></div>17.9%</td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇪🇬</span> <span style="color:var(--text)">EG — Egypt</span></td>
+            <td style="text-align:right">35</td>
+            <td style="text-align:right;color:var(--muted)">0</td>
+            <td style="text-align:right;color:var(--warn)">33</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:1%; background:var(--muted);"></div></div><span style="color:var(--muted)">0.0%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇵🇱</span> <span style="color:var(--text)">PL — Poland</span></td>
+            <td style="text-align:right">35</td>
+            <td style="text-align:right;color:var(--muted)">0</td>
+            <td style="text-align:right;color:var(--warn)">35</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:1%; background:var(--muted);"></div></div><span style="color:var(--muted)">0.0%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇪🇸</span> <span style="color:var(--text)">ES — Spain</span></td>
+            <td style="text-align:right">34</td>
+            <td style="text-align:right;color:var(--accent2)">1</td>
+            <td style="text-align:right;color:var(--warn)">30</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:3%; background:var(--warn);"></div></div><span style="color:var(--warn)">2.9%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇨🇦</span> <span style="color:var(--text)">CA — Canada</span></td>
+            <td style="text-align:right">34</td>
+            <td style="text-align:right;color:var(--muted)">0</td>
+            <td style="text-align:right;color:var(--warn)">26</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:1%; background:var(--muted);"></div></div><span style="color:var(--muted)">0.0%</span></td>
+          </tr>
+          <tr>
+            <td><span style="font-size:1rem">🇬🇧</span> <span style="color:var(--text)">GB — United Kingdom</span></td>
+            <td style="text-align:right">31</td>
+            <td style="text-align:right;color:var(--accent2)">6</td>
+            <td style="text-align:right;color:var(--warn)">22</td>
+            <td><div class="mini-bar-wrap"><div class="mini-bar" style="width:19%; background:var(--accent);"></div></div>19.4%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Insights Row -->
+<div class="section">
+  <div class="grid g3">
+    <div class="insight-box" style="background:rgba(56,224,158,0.06); border:1px solid rgba(56,224,158,0.15);">
+      <span class="insight-label" style="color:var(--accent2)">🌟 Best Agent Efficiency</span>
+      <strong style="color:var(--text)">Swedebridge</strong> tops at 85.7% WR (6 of 7 won). <strong style="color:var(--text)">Sovereign Logistics</strong> is outstanding at 79.5% with high volume (35 of 44 won) — the best blend of volume and conversion.
+    </div>
+    <div class="insight-box" style="background:rgba(79,142,247,0.06); border:1px solid rgba(79,142,247,0.15);">
+      <span class="insight-label" style="color:var(--accent)">🌍 Best Country Markets</span>
+      <strong style="color:var(--text)">USA</strong> leads at 36.4% WR (52 won). <strong style="color:var(--text)">France</strong> is 2nd at 28.0% (14 won). Both are well above the 12.9% average. Switzerland is the highest volume country with a solid 16.4% WR.
+    </div>
+    <div class="insight-box" style="background:rgba(247,107,79,0.06); border:1px solid rgba(247,107,79,0.15);">
+      <span class="insight-label" style="color:var(--warn)">⚠️ Needs Attention</span>
+      <strong style="color:var(--text)">GEX Logistics</strong> — 43 quotes, 0 won (0% WR). Countries with 0% WR despite high volume: <strong style="color:var(--text)">Canada (34), Poland (35), Egypt (35), Sri Lanka (39)</strong>. These markets need strategic review.
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; font-size:0.65rem; color:var(--muted); letter-spacing:0.08em;">
+  <span>SOURCE: Quotes_202601.xlsx &nbsp;·&nbsp; Agent = Column E &nbsp;·&nbsp; Country = Column F</span>
+  <span>CANCEL / DELETED statuses excluded from win rate calculations</span>
+</div>
+
+</body>
+</html>
